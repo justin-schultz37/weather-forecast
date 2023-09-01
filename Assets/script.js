@@ -2,6 +2,7 @@
 var inputCity = document.getElementById('input-city');
 var searchBtn = document.getElementById('search-btn');
 var clearBtn = document.getElementById('clear-btn');
+var enterKey = document.querySelector('#input-city.form-control.me-2');
 
 function getWeatherURL() {
     var apiKey = 'e06830fae50fe82ed4d0b8023f6ee523';
@@ -23,9 +24,14 @@ function getWeatherURL() {
             console.log('Fetch Error:', error);
         });
 }
+enterKey.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+        // console.log('Enter key works');
+        getWeatherURL();
+    }
+})
 
 searchBtn.addEventListener('click', getWeatherURL)
-console.log('test if search btn working');
 
 clearBtn.addEventListener('click', function () {
     console.log('test if  clear btn working');
