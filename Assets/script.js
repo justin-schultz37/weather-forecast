@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let lon = data[0].lon;
                 console.log(lat);
                 console.log(lon);
-
+                getLatLonURL(lat, lon);
 
             })
             .catch(function (error) {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(function (data) {
-                console.log('latlon' + data);
+                console.log('LatLon API:', data);
             })
             .catch(function (error) {
                 console.log('Fetch LatLon Error:', error);
@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
     searchBtn.addEventListener('click', function () {
         const cityName = inputCity.value;
         getWeatherURL(cityName);
+        getLatLonURL();
         // Add the city name to the history
         cityHistory.push(cityName);
         updateHistory();
