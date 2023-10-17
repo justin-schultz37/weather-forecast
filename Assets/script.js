@@ -4,30 +4,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const clearBtn = document.getElementById('clear-btn');
     const historyList = document.getElementById('history-list');
     const apiKey = 'e06830fae50fe82ed4d0b8023f6ee523';
+    const baseWeatherURL = 'https://api.openweathermap.org'
     var cityHistory = [];
 
     function getWeatherURL(cityName) {
-        const weatherURL = 'https://api.openweathermap.org/geo/1.0/direct?q=' + cityName + '&limit=1&appid=' + apiKey;
-        fetch(weatherURL)
+        const weatherURL = `${baseWeatherURL}/geo/1.0/direct?q=${cityName}&limit=1&appid=${apiKey}`;
+        return fetch(weatherURL)
             .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 return response.json();
             })
             .then(function (data) {
                 console.log('API Data:', data);
-                let lat = data[0].lat;
-                let lon = data[0].lon;
+                const lat = data[0].lat;
+                const lon = data[0].lon;
                 console.log(lat);
                 console.log(lon);
-                getLatLonURL(lat, lon);
-
+                return { lat, lon };
             })
             .catch(function (error) {
-                console.log('Fetch URL Error:', error);
+                console.error('Fetch URL Error:', error);
+                throw error; // Re-throw the error so it can be caught by the caller
             });
     }
 
     function getLatLonURL(lat, lon) {
-        const latLonURL = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + apiKey + '&units=imperial';
+        const latLonURL = `${baseWeatherURL}/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
         fetch(latLonURL)
             .then(function (response) {
                 return response.json();
@@ -38,23 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(function (error) {
                 console.log('Fetch LatLon Error:', error);
             });
-    };
-
-    searchBtn.addEventListener('click', function () {
-        const cityName = inputCity.value;
-        getWeatherURL(cityName);
-        getLatLonURL();
-        // Add the city name to the history
-        cityHistory.push(cityName);
-        updateHistory();
-    });
-
-    clearBtn.addEventListener('click', function () {
-
-        cityHistory = [];
-        updateHistory();
-    });
-
+    }
     function updateHistory() {
         // Clear the history list
         historyList.innerHTML = '';
@@ -65,4 +53,29 @@ document.addEventListener('DOMContentLoaded', function () {
             historyList.appendChild(listItem);
         });
     }
+
+    searchBtn.addEventListener('click', function () {
+        const cityName = inputCity.value;
+        getWeatherURL(cityName)
+            .then(({ lat, lon }) => {
+                if (lat && lon) {
+                    getLatLonURL(lat, lon);
+                    cityHistory.push(cityName);
+                    updateHistory();
+                } else {
+                    console.error('Latitude and Longitude are not available.');
+                }
+            })
+            .catch(error => {
+                console.error('Error processing weather data:', error);
+            });
+    });
+
+    clearBtn.addEventListener('click', function () {
+
+        cityHistory.length = 0;
+        updateHistory();
+    });
+
+
 });
