@@ -1,27 +1,47 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var inputCity = document.getElementById('input-city');
-    var searchBtn = document.getElementById('search-btn');
-    var clearBtn = document.getElementById('clear-btn');
-    var historyList = document.getElementById('history-list');
-    var apiKey = 'e06830fae50fe82ed4d0b8023f6ee523';
+    const inputCity = document.getElementById('input-city');
+    const searchBtn = document.getElementById('search-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const historyList = document.getElementById('history-list');
+    const apiKey = 'e06830fae50fe82ed4d0b8023f6ee523';
     var cityHistory = [];
 
     function getWeatherURL(cityName) {
-        var weatherURL = 'https://api.openweathermap.org/geo/1.0/direct?q=' + cityName + '&limit=1&appid=' + apiKey;
+        const weatherURL = 'https://api.openweathermap.org/geo/1.0/direct?q=' + cityName + '&limit=1&appid=' + apiKey;
         fetch(weatherURL)
             .then(function (response) {
                 return response.json();
             })
             .then(function (data) {
                 console.log('API Data:', data);
+                let lat = data[0].lat;
+                let lon = data[0].lon;
+                console.log(lat);
+                console.log(lon);
+
+
             })
             .catch(function (error) {
-                console.log('Fetch Error:', error);
+                console.log('Fetch URL Error:', error);
             });
     }
 
+    function getLatLonURL(lat, lon) {
+        const latLonURL = 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + apiKey + '&units=imperial';
+        fetch(latLonURL)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                console.log('latlon' + data);
+            })
+            .catch(function (error) {
+                console.log('Fetch LatLon Error:', error);
+            });
+    };
+
     searchBtn.addEventListener('click', function () {
-        var cityName = inputCity.value;
+        const cityName = inputCity.value;
         getWeatherURL(cityName);
         // Add the city name to the history
         cityHistory.push(cityName);
@@ -39,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
         historyList.innerHTML = '';
         // Add city names to the history list
         cityHistory.forEach(function (city) {
-            var listItem = document.createElement('li');
+            const listItem = document.createElement('li');
             listItem.textContent = city;
             historyList.appendChild(listItem);
         });
