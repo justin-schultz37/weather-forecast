@@ -21,13 +21,39 @@
             </form>
         </div>
     </nav>
-    <div class="card" style="width: 18rem;">
-        <h5>History</h5>
-        <ul class="list-group list-group-flush" id="history-list">
-        </ul>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Today's Weather</h5>
+                        <div id="today-weather-data">
+                            <!-- You can populate this div with today's weather data using JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">5-Day Forecast</h5>
+                        <div id="five-day-forecast">
+                            <!-- You can populate this div with the 5-day forecast using JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">History</h5>
+                        <ul class="list-group list-group-flush" id="history-list">
+                            <!-- Your city history list remains here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <script src='./Assets/script.js'></script>
+    <script src="./Assets/script.js"></script>
 </body>
 
 </html>
