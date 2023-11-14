@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchBtn = document.getElementById('search-btn');
     const clearBtn = document.getElementById('clear-btn');
     const apiKey = 'e06830fae50fe82ed4d0b8023f6ee523';
-    const baseWeatherURL = 'https://api.openweathermap.org'
-    var cityHistory = [];
+    const baseWeatherURL = 'https://api.openweathermap.org';
+    var cityHistory = JSON.parse(localStorage.getItem('cityHistory')) || [];
 
     function updateHistory() {
         // Update the city history list in the HTML
@@ -12,11 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
         historyList.innerHTML = ''; // Clear existing content
 
         cityHistory.forEach(city => {
-            const listItem = document.createElement('li');
-            listItem.textContent = city;
-            historyList.appendChild(listItem);
+            const buttonItem = document.createElement('button');
+            buttonItem.textContent = city;
+            buttonItem.classList.add('btn', 'btn-light', 'history-button');
+            buttonItem.addEventListener('click', function () {
+                // Handle history item click
+                getWeather(city);
+            });
+            historyList.appendChild(buttonItem);
         });
+
+        // Save updated history to localStorage
+        localStorage.setItem('cityHistory', JSON.stringify(cityHistory));
     }
+
 
     function getWeatherURL(cityName) {
         const weatherURL = `${baseWeatherURL}/geo/1.0/direct?q=${cityName}&limit=1&appid=${apiKey}`;
@@ -107,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         console.error('Index out of bounds:', currentIndex);
                     }
 
-                    currentIndex += 8; // Increase the index by 8 for each subsequent day
+                    currentIndex += 8; // API returns data for every 3 hours or 8 indexes. ensures returns data for next day same time.
                 }
 
             })
@@ -116,14 +125,16 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    searchBtn.addEventListener('click', function () {
-        const cityName = inputCity.value;
+    function getWeather(cityName) {
         getWeatherURL(cityName)
             .then(({ lat, lon }) => {
                 if (lat && lon) {
                     getLatLonURL(lat, lon);
-                    cityHistory.push(cityName);
-                    updateHistory();
+                    // Add the city to history only if it's not already in the history
+                    if (!cityHistory.includes(cityName)) {
+                        cityHistory.push(cityName);
+                        updateHistory();
+                    }
                 } else {
                     console.error('Latitude and Longitude are not available.');
                 }
@@ -131,10 +142,18 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Error processing weather data:', error);
             });
+    }
+
+    searchBtn.addEventListener('click', function () {
+        const cityName = inputCity.value;
+        getWeather(cityName);
     });
 
     clearBtn.addEventListener('click', function () {
         cityHistory.length = 0;
         updateHistory();
     });
+
+    // Initial history update
+    updateHistory();
 });

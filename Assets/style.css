@@ -1,0 +1,18 @@
+.history-button {
+    margin: 5px;
+    border: 1px solid #28a745;
+    border-radius: 2px;
+}
+
+.card-title {
+    margin: 5px;
+    border: 1px solid #28a745;
+    border-radius: 2px;
+    padding: 5px;
+    background-color: #ffffff;
+    text-align: center;
+}
+
+.card-body {
+    background-color: #61b374;
+}
