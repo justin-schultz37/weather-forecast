@@ -85,11 +85,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Update the 5-day forecast
                 const forecastDivs = ['tomorrow-forecast', 'day2-forecast', 'day3-forecast', 'day4-forecast', 'day5-forecast'];
 
-                let currentIndex = data.list.indexOf(todayWeather);
+                let currentIndex = data.list.indexOf(todayWeather) + 8; // Initialize with the next day's index
 
                 for (let i = 0; i < forecastDivs.length; i++) {
-                    console.log('Current Index:', currentIndex); // Add this line
-                    console.log('Forecast List Length:', data.list.length); // Add this line
+                    console.log('Current Index:', currentIndex);
 
                     // Check if the current index is within the bounds of the forecast list
                     if (currentIndex < data.list.length) {
@@ -114,9 +113,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         `;
                     } else {
                         console.error('Index out of bounds:', currentIndex);
+                        currentIndex = data.list.length - 1; // Set it to the last index (39)
                     }
 
-                    currentIndex += 8; // API returns data for every 3 hours or 8 indexes. ensures returns data for next day same time.
+                    currentIndex += 8; // Move to the next day's data
+                    if (currentIndex >= data.list.length) {
+                        currentIndex = data.list.length - 1; // Set it to the last index (39)
+                    }
                 }
 
             })
