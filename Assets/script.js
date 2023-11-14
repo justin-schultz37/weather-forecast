@@ -159,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clearBtn.addEventListener('click', function () {
         cityHistory.length = 0;
         updateHistory();
+        location.reload(); // Reload the page
     });
 
     // Initial history update
