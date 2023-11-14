@@ -1,4 +1,6 @@
+// Wait for the DOM to be fully loaded before executing the code
 document.addEventListener('DOMContentLoaded', function () {
+    // Get references to HTML elements
     const inputCity = document.getElementById('input-city');
     const searchBtn = document.getElementById('search-btn');
     const clearBtn = document.getElementById('clear-btn');
@@ -6,17 +8,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const baseWeatherURL = 'https://api.openweathermap.org';
     var cityHistory = JSON.parse(localStorage.getItem('cityHistory')) || [];
 
+    // Function to update the city history list in the HTML and save to localStorage
     function updateHistory() {
-        // Update the city history list in the HTML
         const historyList = document.getElementById('history-list');
         historyList.innerHTML = ''; // Clear existing content
 
+        // Iterate through cityHistory and create buttons for each city
         cityHistory.forEach(city => {
             const buttonItem = document.createElement('button');
             buttonItem.textContent = city;
             buttonItem.classList.add('btn', 'btn-light', 'history-button');
             buttonItem.addEventListener('click', function () {
-                // Handle history item click
+                // Handle history item click by fetching weather for the selected city
                 getWeather(city);
             });
             historyList.appendChild(buttonItem);
@@ -26,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('cityHistory', JSON.stringify(cityHistory));
     }
 
-
+    // Function to fetch the weather URL for a given city
     function getWeatherURL(cityName) {
         const weatherURL = `${baseWeatherURL}/geo/1.0/direct?q=${cityName}&limit=1&appid=${apiKey}`;
         return fetch(weatherURL)
@@ -50,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Function to fetch the weather forecast for a given latitude and longitude
     function getLatLonURL(lat, lon) {
         const latLonURL = `${baseWeatherURL}/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
 
@@ -70,15 +74,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Display today's weather details
                 const todayWeather = data.list[0];
-                const todayTime = new Date(todayWeather.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                const todayIconCode = todayWeather.weather[0].icon; // Get the weather icon code for today
 
                 todayWeatherDiv.innerHTML += `
                     <div>
-                        <p>Time: ${todayTime}</p>
+                        <img src="https://openweathermap.org/img/w/${todayIconCode}.png" alt="Weather Icon"> <!-- Display today's weather icon -->
                         <p>Temperature: ${todayWeather.main.temp} °F</p>
                         <p>Humidity: ${todayWeather.main.humidity}%</p>
                         <p>Wind Speed: ${todayWeather.wind.speed} mph</p>
-                        <p>Description: ${todayWeather.weather[0].description}</p>
                     </div>
                 `;
 
@@ -93,9 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Check if the current index is within the bounds of the forecast list
                     if (currentIndex < data.list.length) {
                         const forecast = data.list[currentIndex];
-
                         const forecastDate = new Date(forecast.dt * 1000).toDateString();
-                        const forecastTime = new Date(forecast.dt * 1000).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                        const iconCode = forecast.weather[0].icon; // Get the weather icon code
 
                         const forecastDiv = document.getElementById(forecastDivs[i]);
                         forecastDiv.innerHTML = ''; // Clear existing content before appending
@@ -103,11 +105,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="day-container">
                                 <h5>${forecastDate}</h5>
                                 <div>
-                                    <p>Time: ${forecastTime}</p>
+                                    <img src="https://openweathermap.org/img/w/${iconCode}.png" alt="Weather Icon"> <!-- Display weather icon -->
                                     <p>Temperature: ${forecast.main.temp} °F</p>
                                     <p>Humidity: ${forecast.main.humidity}%</p>
                                     <p>Wind Speed: ${forecast.wind.speed} mph</p>
-                                    <p>Description: ${forecast.weather[0].description}</p>
                                 </div>
                             </div>
                         `;
@@ -116,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         currentIndex = data.list.length - 1; // Set it to the last index (39)
                     }
 
-                    currentIndex += 8; // Move to the next day's data
+                    currentIndex += 8;
                     if (currentIndex >= data.list.length) {
                         currentIndex = data.list.length - 1; // Set it to the last index (39)
                     }
@@ -128,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Function to fetch weather for a given city
     function getWeather(cityName) {
         getWeatherURL(cityName)
             .then(({ lat, lon }) => {
@@ -147,11 +149,13 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Event listener for the search button click
     searchBtn.addEventListener('click', function () {
         const cityName = inputCity.value;
         getWeather(cityName);
     });
 
+    // Event listener for the clear button click
     clearBtn.addEventListener('click', function () {
         cityHistory.length = 0;
         updateHistory();
